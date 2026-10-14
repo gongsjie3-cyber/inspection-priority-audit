@@ -1,0 +1,7 @@
+segment,policy,candidates,positives,selected,hits,precision,recall
+has_history,model,11791,2747,2385,821,0.34423480083857444,0.29887149617764835
+has_history,history_rule,11791,2747,2385,796,0.3337526205450734,0.28977065890061887
+has_history,model_quota50,11791,2747,2381,818,0.34355312893742124,0.2977793957044048
+no_history,model,78,18,0,0,,0.0
+no_history,history_rule,78,18,0,0,,0.0
+no_history,model_quota50,78,18,4,0,0.0,0.0

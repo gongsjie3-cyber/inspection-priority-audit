@@ -1,0 +1,67 @@
+{
+  "publisher": "City of Chicago / Department of Public Health",
+  "dataset": "4ijn-s7e5",
+  "landing_page": "https://data.cityofchicago.org/d/4ijn-s7e5",
+  "downloaded_at_utc": "2026-10-10T08:40:53.431666+00:00",
+  "columns": [
+    "inspection_id",
+    "license_",
+    "facility_type",
+    "risk",
+    "address",
+    "zip",
+    "inspection_date",
+    "inspection_type",
+    "results",
+    "latitude",
+    "longitude"
+  ],
+  "rows": 123673,
+  "sources": [
+    {
+      "year": 2019,
+      "url": "https://data.cityofchicago.org/resource/4ijn-s7e5.csv?%24select=inspection_id%2Clicense_%2Cfacility_type%2Crisk%2Caddress%2Czip%2Cinspection_date%2Cinspection_type%2Cresults%2Clatitude%2Clongitude&%24where=inspection_date+%3E%3D+%272019-01-01T00%3A00%3A00%27+AND+inspection_date+%3C+%272020-01-01T00%3A00%3A00%27&%24order=inspection_date%2Cinspection_id&%24limit=50000",
+      "rows": 19052,
+      "response_sha256": "537a2fc933fa9ff783c51315a2f183a1a224e62eab2541e23d49b58516eefe1f"
+    },
+    {
+      "year": 2020,
+      "url": "https://data.cityofchicago.org/resource/4ijn-s7e5.csv?%24select=inspection_id%2Clicense_%2Cfacility_type%2Crisk%2Caddress%2Czip%2Cinspection_date%2Cinspection_type%2Cresults%2Clatitude%2Clongitude&%24where=inspection_date+%3E%3D+%272020-01-01T00%3A00%3A00%27+AND+inspection_date+%3C+%272021-01-01T00%3A00%3A00%27&%24order=inspection_date%2Cinspection_id&%24limit=50000",
+      "rows": 15123,
+      "response_sha256": "15cc0076d6f996d42fd86e7e632d956edc94ace9df478f5dee7d000833962356"
+    },
+    {
+      "year": 2021,
+      "url": "https://data.cityofchicago.org/resource/4ijn-s7e5.csv?%24select=inspection_id%2Clicense_%2Cfacility_type%2Crisk%2Caddress%2Czip%2Cinspection_date%2Cinspection_type%2Cresults%2Clatitude%2Clongitude&%24where=inspection_date+%3E%3D+%272021-01-01T00%3A00%3A00%27+AND+inspection_date+%3C+%272022-01-01T00%3A00%3A00%27&%24order=inspection_date%2Cinspection_id&%24limit=50000",
+      "rows": 15868,
+      "response_sha256": "71fac7f1ab3714b551d00787f23686587b64ef438bca0fd2f1dcfbd06df53df0"
+    },
+    {
+      "year": 2022,
+      "url": "https://data.cityofchicago.org/resource/4ijn-s7e5.csv?%24select=inspection_id%2Clicense_%2Cfacility_type%2Crisk%2Caddress%2Czip%2Cinspection_date%2Cinspection_type%2Cresults%2Clatitude%2Clongitude&%24where=inspection_date+%3E%3D+%272022-01-01T00%3A00%3A00%27+AND+inspection_date+%3C+%272023-01-01T00%3A00%3A00%27&%24order=inspection_date%2Cinspection_id&%24limit=50000",
+      "rows": 16936,
+      "response_sha256": "2e22d9e96ef14ddc117f8931647cf3a8e675ae181f0fabe003f23fad5c3b869e"
+    },
+    {
+      "year": 2023,
+      "url": "https://data.cityofchicago.org/resource/4ijn-s7e5.csv?%24select=inspection_id%2Clicense_%2Cfacility_type%2Crisk%2Caddress%2Czip%2Cinspection_date%2Cinspection_type%2Cresults%2Clatitude%2Clongitude&%24where=inspection_date+%3E%3D+%272023-01-01T00%3A00%3A00%27+AND+inspection_date+%3C+%272024-01-01T00%3A00%3A00%27&%24order=inspection_date%2Cinspection_id&%24limit=50000",
+      "rows": 18261,
+      "response_sha256": "e409923d4ea0645482cbb7d27ff9fc3a115f294d58d955db307f6478e303914a"
+    },
+    {
+      "year": 2024,
+      "url": "https://data.cityofchicago.org/resource/4ijn-s7e5.csv?%24select=inspection_id%2Clicense_%2Cfacility_type%2Crisk%2Caddress%2Czip%2Cinspection_date%2Cinspection_type%2Cresults%2Clatitude%2Clongitude&%24where=inspection_date+%3E%3D+%272024-01-01T00%3A00%3A00%27+AND+inspection_date+%3C+%272025-01-01T00%3A00%3A00%27&%24order=inspection_date%2Cinspection_id&%24limit=50000",
+      "rows": 19228,
+      "response_sha256": "e29148fb8b5bf7108469a6e60c09041286282290e35c469db2802d2ae020bb51"
+    },
+    {
+      "year": 2025,
+      "url": "https://data.cityofchicago.org/resource/4ijn-s7e5.csv?%24select=inspection_id%2Clicense_%2Cfacility_type%2Crisk%2Caddress%2Czip%2Cinspection_date%2Cinspection_type%2Cresults%2Clatitude%2Clongitude&%24where=inspection_date+%3E%3D+%272025-01-01T00%3A00%3A00%27+AND+inspection_date+%3C+%272026-01-01T00%3A00%3A00%27&%24order=inspection_date%2Cinspection_id&%24limit=50000",
+      "rows": 19205,
+      "response_sha256": "5c12b8c95293d53c70c21d20afce2700b5b3e70b518a3c398c21bdb73cf6fcd8"
+    }
+  ],
+  "csv_sha256": "1b66453090c8ec2fc041c36da2fd01098f7e5984d0fcde162bf3f3b7151220be",
+  "snapshot_sha256": "c097129167e8276de4935713304f6ffb8f998450f95e30a5c78d2a3cc1f4c5c8",
+  "note": "Current export of historical events; not an archived as-of publication snapshot. No violations text downloaded."
+}

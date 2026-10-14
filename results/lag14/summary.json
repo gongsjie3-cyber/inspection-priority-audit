@@ -1,0 +1,91 @@
+{
+  "lag_days": 14,
+  "features": [
+    "history_log",
+    "fail_rate",
+    "recent_fail_rate",
+    "conditions_rate",
+    "last_fail",
+    "last_conditions",
+    "days_since_last_log",
+    "days_since_routine_log",
+    "recent_count_log",
+    "complaint_count_log",
+    "complaint_fail_log",
+    "risk_high",
+    "risk_medium",
+    "risk_low",
+    "no_history",
+    "month_sin",
+    "month_cos"
+  ],
+  "chosen_model": "logistic",
+  "selection_rule": "highest pooled monthly Precision@20% in validation 2023; no test tuning",
+  "best_rule_selected_on_validation": "history_rule",
+  "audit": {
+    "raw_rows": 123673,
+    "duplicate_id_removed": 0,
+    "invalid_identity_or_date_removed": 304,
+    "conflicting_same_day_rows_removed": 1544,
+    "same_day_same_result_duplicates_removed": 76,
+    "valid_identity_dedup_rows": 121749,
+    "non_evaluable_results_removed_from_history": 19260,
+    "target_before_month_dedup": 29521,
+    "repeated_routine_same_venue_month_removed": 1,
+    "target_rows": 29520,
+    "history_rows": 102489,
+    "target_venues": 9628,
+    "raw_result_counts": {
+      "Pass": 54972,
+      "Pass w/ Conditions": 24799,
+      "Fail": 23843,
+      "Out of Business": 9392,
+      "No Entry": 7904,
+      "Not Ready": 2735,
+      "Business Not Located": 28
+    }
+  },
+  "splits": {
+    "train": 12606,
+    "validation": 4960,
+    "refit": 17510,
+    "test": 11869
+  },
+  "test_scores": {
+    "roc_auc": 0.6247709609193502,
+    "average_precision": 0.31949083558743585,
+    "brier": 0.1728949439880628
+  },
+  "precision_difference_ci": {
+    "comparison": "model minus history_rule",
+    "unit": "absolute precision difference",
+    "estimate": 0.017190775681341718,
+    "lower95": 0.0028904533334950504,
+    "upper95": 0.03053116265695008,
+    "bootstrap": "paired whole-month resampling; does not account for cross-month venue dependence",
+    "repetitions": 2000
+  },
+  "random_difference_ci": {
+    "comparison": "model minus random_expected",
+    "unit": "absolute precision difference",
+    "estimate": 0.11753604595526113,
+    "lower95": 0.1042361138292102,
+    "upper95": 0.13102946667014792,
+    "bootstrap": "paired whole-month resampling; does not account for cross-month venue dependence",
+    "repetitions": 2000
+  },
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.5.3",
+    "pandas": "2.2.3",
+    "sklearn": "1.9.1"
+  },
+  "limitations": [
+    "Retrospective candidate pools restricted to observed routine restaurant inspections.",
+    "Fail is an administrative inspection label, not illness or a critical-violation label.",
+    "14/30-day publication lag is assumed; historical version timestamps are unavailable.",
+    "Historical exports can contain retrospective corrections.",
+    "ZIP proportionality is a coverage constraint, not proof of demographic fairness.",
+    "No staffing cost, causal effect or operational deployment is estimated."
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "unit_tests": {
+    "passed": 10,
+    "failed": 0,
+    "log": "results/test_log.txt"
+  },
+  "sql_audits": "all history counts and 24 monthly rankings matched",
+  "report_pdf": {
+    "pages": 5,
+    "visual_review": "All 5 final rendered pages reviewed; no overlap or clipping observed."
+  },
+  "html_checks": {
+    "initial_browser_dom": "Loaded with all expected tables and values",
+    "script_checks": "8 budget scenarios and 24 historical months passed using a DOM stub",
+    "live_interaction": "Not verified: preview tab became unavailable after initial load."
+  },
+  "score_explanations": "All test-row standardized contributions reconstruct logistic probabilities to tolerance 1e-12",
+  "source_sha256": {
+    "src/build_report.py": "cd19b61d98230af4a42d107abfef0018271165d6804726fd167292e8048b9ca1",
+    "src/download.py": "5bbee467abbb46c07c555d02fa3e2787b8b9aee6bb38cfd676cbac3ada95c9fe",
+    "src/pipeline.py": "ede2a768876480d979571fef2b18c576586559a6ed78ceedfc1863945dcd6ae4"
+  }
+}

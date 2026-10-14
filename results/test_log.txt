@@ -1,0 +1,27 @@
+test_budget_and_no_duplicate_selections (test_integrity.IntegrityTests.test_budget_and_no_duplicate_selections) ... ok
+test_cutoff_day_is_not_available (test_integrity.IntegrityTests.test_cutoff_day_is_not_available) ... src/pipeline.py:78: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+  cutoff = decision - pd.Timedelta(days=lag_days)
+src/pipeline.py:81: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+  recent = h[h['date'] >= cutoff - pd.Timedelta(days=365)]
+ok
+test_label_blind_selection (test_integrity.IntegrityTests.test_label_blind_selection) ... ok
+test_no_current_outcome_features_or_identity_features (test_integrity.IntegrityTests.test_no_current_outcome_features_or_identity_features) ... ok
+test_same_day_conflicts_removed (test_integrity.IntegrityTests.test_same_day_conflicts_removed) ... ok
+test_snapshot_checksum (test_integrity.IntegrityTests.test_snapshot_checksum) ... ok
+test_sql_point_in_time_join (test_integrity.IntegrityTests.test_sql_point_in_time_join) ... ok
+test_sql_ranking_reproduces_python (test_integrity.IntegrityTests.test_sql_ranking_reproduces_python) ... ok
+test_strict_information_cutoff (test_integrity.IntegrityTests.test_strict_information_cutoff) ... ok
+test_target_outcome_mutation_does_not_change_features (test_integrity.IntegrityTests.test_target_outcome_mutation_does_not_change_features) ... src/pipeline.py:78: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+  cutoff = decision - pd.Timedelta(days=lag_days)
+src/pipeline.py:81: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+  recent = h[h['date'] >= cutoff - pd.Timedelta(days=365)]
+src/pipeline.py:78: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+  cutoff = decision - pd.Timedelta(days=lag_days)
+src/pipeline.py:81: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+  recent = h[h['date'] >= cutoff - pd.Timedelta(days=365)]
+ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.061s
+
+OK
