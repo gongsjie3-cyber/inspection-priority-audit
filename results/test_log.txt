@@ -1,27 +1,22 @@
 test_budget_and_no_duplicate_selections (test_integrity.IntegrityTests.test_budget_and_no_duplicate_selections) ... ok
-test_cutoff_day_is_not_available (test_integrity.IntegrityTests.test_cutoff_day_is_not_available) ... src/pipeline.py:78: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
-  cutoff = decision - pd.Timedelta(days=lag_days)
-src/pipeline.py:81: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
-  recent = h[h['date'] >= cutoff - pd.Timedelta(days=365)]
-ok
+test_budget_uses_exact_decimal_fraction (test_integrity.IntegrityTests.test_budget_uses_exact_decimal_fraction) ... ok
+test_current_risk_and_zip_do_not_enter_decision_inputs (test_integrity.IntegrityTests.test_current_risk_and_zip_do_not_enter_decision_inputs) ... ok
+test_cutoff_day_is_not_available (test_integrity.IntegrityTests.test_cutoff_day_is_not_available) ... ok
 test_label_blind_selection (test_integrity.IntegrityTests.test_label_blind_selection) ... ok
 test_no_current_outcome_features_or_identity_features (test_integrity.IntegrityTests.test_no_current_outcome_features_or_identity_features) ... ok
+test_published_policy_metrics_match_row_level_outcomes (test_integrity.IntegrityTests.test_published_policy_metrics_match_row_level_outcomes) ... ok
+test_quota_equal_remainders_use_declared_zip_tie_break (test_integrity.IntegrityTests.test_quota_equal_remainders_use_declared_zip_tie_break) ... ok
 test_same_day_conflicts_removed (test_integrity.IntegrityTests.test_same_day_conflicts_removed) ... ok
+test_saved_model_and_scaler_match_available_refit_data (test_integrity.IntegrityTests.test_saved_model_and_scaler_match_available_refit_data) ... ok
 test_snapshot_checksum (test_integrity.IntegrityTests.test_snapshot_checksum) ... ok
+test_split_year_boundaries (test_integrity.IntegrityTests.test_split_year_boundaries) ... ok
 test_sql_point_in_time_join (test_integrity.IntegrityTests.test_sql_point_in_time_join) ... ok
 test_sql_ranking_reproduces_python (test_integrity.IntegrityTests.test_sql_ranking_reproduces_python) ... ok
 test_strict_information_cutoff (test_integrity.IntegrityTests.test_strict_information_cutoff) ... ok
-test_target_outcome_mutation_does_not_change_features (test_integrity.IntegrityTests.test_target_outcome_mutation_does_not_change_features) ... src/pipeline.py:78: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
-  cutoff = decision - pd.Timedelta(days=lag_days)
-src/pipeline.py:81: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
-  recent = h[h['date'] >= cutoff - pd.Timedelta(days=365)]
-src/pipeline.py:78: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
-  cutoff = decision - pd.Timedelta(days=lag_days)
-src/pipeline.py:81: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
-  recent = h[h['date'] >= cutoff - pd.Timedelta(days=365)]
-ok
+test_target_outcome_mutation_does_not_change_features (test_integrity.IntegrityTests.test_target_outcome_mutation_does_not_change_features) ... ok
+test_validation_labels_available_at_selection_time (test_integrity.IntegrityTests.test_validation_labels_available_at_selection_time) ... ok
 
 ----------------------------------------------------------------------
-Ran 10 tests in 1.061s
+Ran 17 tests in 1.261s
 
 OK

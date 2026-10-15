@@ -2,6 +2,7 @@
 from pathlib import Path
 import base64
 import html
+import hashlib
 import json
 import os
 import textwrap
@@ -30,10 +31,21 @@ META=json.loads((R/'summary.json').read_text())
 P=pd.read_csv(R/'policies.csv').set_index('policy')
 CURVE=pd.read_csv(R/'budget_curve.csv')
 MONTHLY=pd.read_csv(R/'monthly.csv')
+VALIDATION=pd.read_csv(R/'validation_models.csv').set_index('model')
+# Frozen prose is published only against the explicitly reviewed metric files.
+reference=json.loads((ROOT/'results/report_reference.json').read_text())
+for relative,expected_hash in reference['metric_files_sha256'].items():
+    actual=hashlib.sha256((ROOT/relative).read_bytes()).hexdigest()
+    if actual != expected_hash:
+        raise RuntimeError(f'Review the report narrative and refresh report_reference.json: {relative} changed.')
+for lag,values in reference['summary_values'].items():
+    current=json.loads((ROOT/f'results/lag{lag}/summary.json').read_text())
+    if any(current[key] != value for key,value in values.items()):
+        raise RuntimeError(f'Review the report narrative: lag{lag} summary changed.')
 # Narrative paragraphs were reviewed for this frozen experiment. Fail loudly if
 # a new run changes results; otherwise static prose could silently become stale.
 expected={'model':836,'history_rule':795,'high_risk':546,'longest_wait':667,
-          'model_quota50':804,'model_quota100':778}
+          'model_quota50':804,'model_quota100':779}
 if META['audit']['raw_rows'] != 123673 or any(P.loc[k,'hits'] != v for k,v in expected.items()):
     raise RuntimeError('Results changed: update and review the fixed report narrative before exporting.')
 LABELS={'model':'逻辑回归排序','history_rule':'历史不合格优先','high_risk':'历史高风险等级优先',
@@ -124,7 +136,7 @@ def explain_rows():
             if name not in names:names.append(name)
         reasons.append('、'.join(names) or '综合历史特征')
     d['score_explanation']=reasons
-    d[['venue_id','month','score','score_explanation','y','model_selected']].to_csv(R/'explained_test.csv.gz',index=False,compression='gzip')
+    d[['venue_id','month','score','score_explanation','y','model_selected']].to_csv(R/'explained_test.csv.gz',index=False,compression={'method':'gzip','mtime':0})
     result={}
     for month,g in d.groupby('month'):
         sub=g.sort_values(['score','venue_id'],ascending=[False,True]).head(8)
@@ -154,12 +166,12 @@ table{border-collapse:collapse;width:100%;font-size:14px}th{text-align:left;colo
 <main><div class="wrap"><nav><a href="#result">结果</a><a href="#budget">预算实验</a><a href="#coverage">覆盖取舍</a><a href="#method">信息时点</a><a href="#examples">历史候选示例</a><a href="#limits">边界与复现</a></nav>
 <div class="grid"><div class="metric"><span>同等约 20% 名额的命中率</span><strong>35.05%</strong><small>随机期望 23.30%；经验规则 33.33%</small></div><div class="metric"><span>相对最强经验规则多捕获</span><strong>41 条</strong><small>836 vs 795 条 Fail；同为 2,385 个名额</small></div><div class="metric"><span>时间留出的测试样本</span><strong>11,869</strong><small>2024—2025 年 / 24 个历史月份</small></div></div>
 <div class="caveat"><b>先读这一句：</b>候选池由当月实际受检记录事后构造，名单不是月初已知的真实可检查商户全集。这些数字描述历史样本的排序表现，不代表已上线效果、节省人力或减少疾病。</div>
-<section id="result"><h2><em>01 / 结果</em>模型胜过随机，经验规则也很强</h2><div class="two"><div><img class="plot" src="@@POLICY@@" alt="五种策略命中率比较：模型35.05%，历史规则33.33%，随机23.30%"><p class="small">每月 ceil(20% × 候选数量)，测试期合计 2,385 个名额；目标为行政记录 Fail。</p></div><div><p class="finding">有价值的结论，是量化模型比经验多做了多少。</p><p>复杂的梯度提升树在 2023 年验证集上没有胜过逻辑回归，因此最终使用逻辑回归，保留 17 个可追溯的历史特征。</p><p>模型相对经验规则提升 <b>1.72 个百分点</b>。按月份配对重采样的 95% 区间为 <b>+0.29 至 +3.05 个百分点</b>，未覆盖同店跨月相关性。</p><p class="small">2024 年差值 +2.50 个百分点，2025 年 +0.93 个百分点。增益在缩小，应持续观察。</p></div></div></section>
+<section id="result"><h2><em>01 / 结果</em>模型胜过随机，经验规则也很强</h2><div class="two"><div><img class="plot" src="@@POLICY@@" alt="五种策略命中率比较：模型35.05%，历史规则33.33%，随机23.30%"><p class="small">每月 ceil(20% × 候选数量)，测试期合计 2,385 个名额；目标为行政记录 Fail。</p></div><div><p class="finding">有价值的结论，是量化模型比经验多做了多少。</p><p>复杂的梯度提升树在 2023 年 1—11 月验证集上没有胜过逻辑回归，因此最终使用逻辑回归，保留 17 个可追溯的历史特征。</p><p>模型相对经验规则提升 <b>1.72 个百分点</b>。按月份配对重采样的 95% 区间为 <b>+0.29 至 +3.05 个百分点</b>，未覆盖同店跨月相关性。</p><p class="small">2024 年差值 +2.50 个百分点，2025 年 +0.93 个百分点。2025 年的观察差值较小；两年数据不足以判断长期趋势。</p></div></div></section>
 <section id="budget"><h2><em>02 / 预算实验</em>如果优先名额增加，哪些结果会改变？</h2><div class="panel"><div class="controls"><label for="budget-range">每月优先名额占比</label><input id="budget-range" type="range" min="0" max="7" value="3" step="1"><output id="budget-value" for="budget-range">20%</output></div><p class="small" id="budget-caption" aria-live="polite"></p><div class="table-scroll"><table><thead><tr><th>策略</th><th class="num">捕获 Fail</th><th class="num">命中率</th><th class="num">召回率</th><th class="num">地域偏离 TV ↓</th></tr></thead><tbody id="budget-rows"></tbody></table></div><p class="small">随机项为月内等概率选择的数学期望，可为小数。预算滑块展示预先计算的情景，不重新选择模型；20% 是验证阶段预定的主指标。</p></div><img class="plot" style="margin-top:18px" src="@@CURVE@@" alt="不同优先名额比例下的Fail捕获比例曲线"></section>
 <section id="coverage"><h2><em>03 / 管理取舍</em>多覆盖一些地区，要付出多少命中率？</h2><div class="two"><div><img class="plot" src="@@COVERAGE@@" alt="三种策略的命中率与邮编构成偏离度取舍"></div><div><p>先将 <b>50% 的优先名额</b>按候选池的历史邮编构成分配，在组内按分数选；其余名额全局按分数补齐。</p><p>相较纯模型排序，少捕获 <b>32 条</b> Fail，命中率从 <b>35.05% → 33.71%</b>；平均构成偏离度从 <b>0.291 → 0.237</b>。</p><p>这为管理者提供可量化的选项。是否值得，需要结合覆盖目标，而不能只由算法决定。</p><p class="small">TV = 0.5 × 各邮编入选占比与候选占比差的绝对值之和。越低表示越接近候选构成；不等于人口公平或服务需求公平。</p></div></div></section>
-<section id="method"><h2><em>04 / 方法</em>把“当时能知道什么”写进数据流程</h2><div class="two"><div><div class="step"><b>123,673 条官方记录 → 29,520 条目标样本</b><p>以许可证＋地址识别对象；排除同日冲突、非评价结果。仅预测餐饮场所的例行检查，历史信息可来自其他检查类型。</p></div><div class="step"><b>每个月 1 日，冻结历史</b><p>只用严格早于“月初减 14 天”的记录。当前检查结果、违规文本、当前风险等级均不进入模型。</p></div><div class="step"><b>训练 / 验证 / 测试严格按时间分开</b><p>2020—2022 年训练，2023 年选择模型，2024—2025 年留出测试。2019 年预热。训练时也剔除尚不满足信息延迟的年末标签。</p></div><div class="step"><b>SQL 交叉核验 + 30 天延迟复查</b><p>独立核验历史关联数量与前 20% 排名。固定逻辑回归，将信息延迟改成 30 天后，命中率为 34.42%；较经验规则的优势区间为 −0.24 至 +2.30 个百分点，包含零。</p></div></div><div><img class="plot" src="@@MONTHLY@@" alt="2024至2025各月模型与经验规则的命中率"><h3>一个没有藏起来的弱点</h3><p>无可用历史的测试样本有 <b>76 条</b>，其中 18 条 Fail。纯模型只优先选中 5 条，捕获 1 条 Fail。这部分样本太少，且召回不足，不能据此认定适合新店。</p><p class="small">实际试点需要独立新店／必查名单或探索名额，并补齐未受检对象与当时可用信息的记录。</p></div></div></section>
-<section id="examples"><h2><em>05 / 可解释输出</em>看看历史月份里的优先候选</h2><div class="panel"><div class="controls"><label for="month-select">历史月份</label><select id="month-select"></select></div><p class="small">展示该月分数最高的 8 条历史记录。评分为模型输出；信号是相对训练均值提高线性预测值最大的特征，不是因果解释，也不是实时检查建议。</p><div class="table-scroll"><table><thead><tr><th>匿名对象</th><th>历史 ZIP</th><th class="num">评分</th><th class="num">历史条数</th><th>主要正向信号</th><th>事后结果</th></tr></thead><tbody id="case-rows"></tbody></table></div></div></section>
-<section id="limits"><h2><em>06 / 边界与复现</em>能证明什么，尚不能证明什么</h2><div class="two"><div><h3>已完成</h3><p>官方数据快照和校验清单、历史时点特征、模型与基线比较、预算与地域配额实验、月份配对重采样、30 天延迟分析，以及可运行的核验测试。</p><h3>下一步需要真实业务补充</h3><p>月初可检查对象全集、实际发布时间与历史版本、必查规则、检查员差异、位置与路线成本。补充这些后，才适合讨论前瞻试点。</p></div><div><h3>三个禁止扩大的口径</h3><p>① Fail 不等于严重违规或疾病。<br>② 50.45% 是相对随机的捕获数提升，不是节省 50% 人力。<br>③ 邮编比例约束不等于解决公平性。</p><details><summary>查看复现入口</summary><p>随包 README 说明依赖与运行顺序。核心入口：<code>python src/pipeline.py</code>；敏感性：<code>python src/pipeline.py --lag 30</code>；核验：<code>python -m unittest discover -s tests -v</code>。</p></details></div></div></section>
+<section id="method"><h2><em>04 / 方法</em>把“当时能知道什么”写进数据流程</h2><div class="two"><div><div class="step"><b>123,673 条官方记录 → 29,520 条目标样本</b><p>以许可证＋地址识别对象；排除同日冲突、非评价结果。仅预测餐饮场所的例行检查，历史信息可来自其他检查类型。</p></div><div class="step"><b>每个月 1 日，冻结历史</b><p>只用严格早于“月初减 14 天”的记录。当前检查结果、违规文本、当前风险等级均不进入模型。</p></div><div class="step"><b>训练 / 验证 / 测试严格按时间分开</b><p>2020—2022 年训练，2023 年 1—11 月选择模型，2024—2025 年留出测试。验证排除标签未完整可用的 12 月；训练和重训也剔除尚不满足延迟的年末标签。2019 年用于预热。</p></div><div class="step"><b>SQL 交叉核验 + 30 天延迟复查</b><p>独立核验历史关联数量与前 20% 排名。固定逻辑回归，将信息延迟改成 30 天后，命中率为 34.42%；较经验规则的优势区间为 −0.24 至 +2.30 个百分点，包含零。</p></div></div><div><img class="plot" src="@@MONTHLY@@" alt="2024至2025各月模型与经验规则的命中率"><h3>一个没有藏起来的弱点</h3><p>无可用历史的测试样本有 <b>76 条</b>，其中 18 条 Fail。纯模型只优先选中 5 条，捕获 1 条 Fail。这部分样本太少，且召回不足，无历史不必然等于新店，不能据此认定适合新店。</p><p class="small">实际试点需要独立新店／必查名单或探索名额，并补齐未受检对象与当时可用信息的记录。</p></div></div></section>
+<section id="examples"><h2><em>05 / 可解释输出</em>看看历史月份里的优先候选</h2><div class="panel"><div class="controls"><label for="month-select">历史月份</label><select id="month-select"></select></div><p class="small">展示该月分数最高的 8 条历史记录。评分为模型概率输出乘 100，仅用于排序，不是疾病概率；对象代号是哈希标识。信号是相对训练均值提高线性预测值最大的特征，不是因果解释，也不是实时检查建议。</p><div class="table-scroll"><table><thead><tr><th>对象代号</th><th>历史 ZIP</th><th class="num">评分（0—100）</th><th class="num">历史条数</th><th>主要正向信号</th><th>事后结果</th></tr></thead><tbody id="case-rows"></tbody></table></div></div></section>
+<section id="limits"><h2><em>06 / 边界与复现</em>能证明什么，尚不能证明什么</h2><div class="two"><div><h3>已完成</h3><p>官方数据快照和校验清单、历史时点特征、模型与基线比较、预算与地域配额实验、月份配对重采样、30 天延迟分析，以及可运行的核验测试。</p><h3>下一步需要真实业务补充</h3><p>月初可检查对象全集、实际发布时间与历史版本、必查规则、检查员差异、位置与路线成本。补充这些后，才适合讨论前瞻试点。</p></div><div><h3>三个结论边界</h3><p>① Fail 不等于严重违规或疾病。<br>② 50.45% 是相对随机的捕获数提升，不是节省 50% 人力。<br>③ 邮编比例约束不等于解决公平性。</p><details><summary>查看复现入口</summary><p>随包 README 说明依赖与运行顺序。核心入口：<code>python src/pipeline.py</code>；敏感性：<code>python src/pipeline.py --lag 30</code>；核验：<code>python -m unittest discover -s tests -v</code>。</p></details></div></div></section>
 <footer>数据来源：<a href="https://data.cityofchicago.org/d/4ijn-s7e5">Chicago Food Inspections</a>；历史导出范围 2019—2025，下载于 2026-10-10。研究背景：<a href="https://github.com/Chicago/food-inspections-evaluation">芝加哥既有开源项目</a>、<a href="https://arxiv.org/abs/1910.04906">Kannan et al. (2019)</a>、<a href="https://arxiv.org/abs/2108.05523">Singh et al. (2022)</a>。<br>个人项目 · AI 协助生成与运行核验 · 非官方产品，无真实业务部署。原始记录中的机构名和地址不在本报告展示。</footer>
 </div></main><script>
 const DATA=@@DATA@@;
@@ -231,29 +243,29 @@ def make_pdf():
     add('只评估 Restaurant 的 Canvass（例行检查）；同店同月保留第一次。Fail 为正类，Pass 与 Pass w/ Conditions 为负类。实体键为“许可证＋规范化地址”，共 9,628 个组合。投诉检查和复检不作为目标，但可作为旧历史。')
     add('冻结与拆分','h2')
     add('每月 1 日生成特征，只纳入严格早于“月初减 14 天”的历史事件。使用 17 个历史与月份特征；不使用本次结果、违规文本、本次风险等级、店铺标识或邮编。发布延迟是假设，现有数据没有当时的发布时间。')
-    story.append(table([['环节','时段与有效样本'],['训练 / 验证','2020—2022：12,606；2023：4,960'],['重训 / 留出测试','重训 17,510；2024—2025 测试 11,869']],[155,340]))
-    add('训练与重训也排除年末尚未满足 14 天延迟的标签，因此数量不是按整年直接相加。模型在测试期固定，历史特征按月更新。','small')
+    story.append(table([['环节','时段与有效样本'],['训练 / 验证',f"2020—2022：{META['splits']['train']:,}；2023 年 1—11 月：{META['splits']['validation']:,}"],['重训 / 留出测试','重训 17,510；2024—2025 测试 11,869']],[155,340]))
+    add('2024 年初选模型时，12 月标签尚未完整可用，验证排除整个 12 月；训练与重训同样遵守 14 天延迟。已可用的 12 月标签可用于重训。测试期模型固定，历史特征按月更新。','small')
     story.append(PageBreak())
 
     add('02 / 资源分配','kicker');add('命中率与地区覆盖，不能只选一个数字','h1')
     story.append(picture('03_coverage_tradeoff.png'))
-    story.append(table([['20% 总名额下的策略','捕获 Fail','命中率','平均 TV'],['全部按模型分数','836','35.05%','0.291'],['50% 比例配额 + 分数补齐','804','33.71%','0.237'],['100% 比例配额，组内按分数','778','32.62%','0.069']],[245,75,85,90]))
+    story.append(table([['20% 总名额下的策略','捕获 Fail','命中率','平均 TV'],['全部按模型分数','836','35.05%','0.291'],['50% 比例配额 + 分数补齐','804','33.71%','0.237'],['100% 比例配额，组内按分数','779','32.66%','0.069']],[245,75,85,90]))
     add('怎么分配','h2')
-    add('按当月候选池的历史邮编数量占比分配预留名额，最大余数法取整；各邮编内按分数排序，剩余名额全局补齐。所有策略总名额相同；分数并列使用匿名实体键打破平局，不看结果。')
+    add('按当月候选池的历史邮编数量占比分配预留名额，最大余数法取整；各邮编内按分数排序，剩余名额全局补齐。所有策略总名额相同；分数并列使用哈希实体键打破平局，不看结果。')
     add('怎样读这笔账','h2')
     add('50% 配额情景比纯分数排序少捕获 32 条 Fail，命中率下降 1.34 个百分点；平均地域构成偏离度下降约 18.5%。是否值得，应由明确的覆盖目标决定。比例约束只反映候选池构成，不是人口或需求公平。')
     add('TV = 0.5 × 各邮编“入选占比与候选占比之差”的绝对值之和；按月计算后取均值。低 TV 不代表每个地区获得相同待遇。','small')
     story.append(PageBreak())
 
     add('03 / 稳健性与失效边界','kicker');add('把增益和弱点放在同一张桌上','h1')
-    story.append(table([['2023 年验证集','命中率 @20%','ROC-AUC'],['逻辑回归（选中）','37.91%','0.6068'],['梯度提升树','36.91%','0.6048']],[260,120,115]))
+    story.append(table([['2023 年 1—11 月验证','命中率 @20%','ROC-AUC'],['逻辑回归（选中）',f"{VALIDATION.loc['logistic','precision']:.2%}",f"{VALIDATION.loc['logistic','roc_auc']:.4f}"],['梯度提升树',f"{VALIDATION.loc['hist_gradient_boosting','precision']:.2%}",f"{VALIDATION.loc['hist_gradient_boosting','roc_auc']:.4f}"]],[260,120,115]))
     story.append(Spacer(1,12));story.append(picture('04_monthly_stability.png'))
     add('不确定性','h2')
     add('模型比最强经验规则的测试命中率高 1.72 个百分点。对 24 个月做 2,000 次配对重采样，95% 区间为 +0.29 至 +3.05 个百分点。此区间仅反映月份抽样波动，未处理同店跨月相关性和原始检查选择偏差。')
     add('信息延迟与时间变化','h2')
     add('固定主分析所选逻辑回归，假设延迟 30 天时命中率降至 34.42%，经验规则为 33.38%；差值的 95% 区间为 -0.24 至 +2.30 个百分点，包含零。因此不能声称优势对信息延迟假设稳健。主分析的模型优势在 2024 / 2025 年分别为 +2.50 / +0.93 个百分点，值得持续监测。')
-    add('新店 / 无历史记录是明显短板','h2')
-    add('测试集中 76 条无历史记录，18 条为 Fail；模型只优先选中 5 条、捕获 1 条。不能把该模型直接扩展成新店检查策略。应单列必查或探索名额，再进行前瞻验证。')
+    add('无可用历史记录的对象是明显短板','h2')
+    add('测试集中 76 条无历史记录，18 条为 Fail；模型只优先选中 5 条、捕获 1 条。无历史不必然等于新店，也不能据此认定适合新店。应单列必查或探索名额，再进行前瞻验证。')
     story.append(PageBreak())
 
     add('04 / 交付与决策建议','kicker');add('成果可以复现，结论必须有边界','h1')
@@ -265,7 +277,7 @@ def make_pdf():
     add('① 候选池只包含已受检且有有效结果的样本，无法推广到所有商户。<br/>② Fail 是行政结果，不是疾病或严重违规。<br/>③ 14 / 30 天延迟不能恢复真实历史发布时间，导出可能含后续修订。<br/>④ 地址、许可证变化与 2019 年之前历史截断可能影响实体及特征。<br/>⑤ 地区比例不是公平性证明；未评估检查员差异、交通成本、因果效应或真实业务收益。')
     add('来源与前人工作','h2')
     add('[1] City of Chicago. Food Inspections, dataset 4ijn-s7e5. data.cityofchicago.org/d/4ijn-s7e5；下载于 2026-10-10。<br/>[2] Chicago. Food Inspection Forecasting. github.com/Chicago/food-inspections-evaluation。<br/>[3] Kannan, Shapiro &amp; Bilgic (2019). Hindsight Analysis of the Chicago Food Inspection Forecasting Model. arXiv:1910.04906。<br/>[4] Singh, Shah, Kanich &amp; Kash (2022). Fair Decision-Making for Food Inspections. arXiv:2108.05523。','small')
-    add('该选题已有前人工作。本项目的价值是独立实现并核验信息时点、强基线和覆盖取舍，不声称学术首创，也不冒充官方项目。代码、简历文案和复现说明在随附项目包中。','small')
+    add('该选题已有前人工作。本项目重点是实现并核验信息时点、强基线和覆盖取舍，不声称学术首创，也不冒充官方项目。代码、数据来源与复现说明均已纳入公开项目仓库。','small')
     doc=SimpleDocTemplate(str(ROOT/'项目报告.pdf'),pagesize=A4,rightMargin=48,leftMargin=48,
                           topMargin=45,bottomMargin=59,title='先查哪家？餐饮巡检风险排序与覆盖审计',author='个人研究项目')
     doc.build(story,onFirstPage=page,onLaterPages=page)

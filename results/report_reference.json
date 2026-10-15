@@ -1,0 +1,128 @@
+{
+  "reviewed_on": "2026-10-15",
+  "note": "Frozen narrative was reviewed against these metric files. Reassess narrative before accepting changed metrics.",
+  "metric_files_sha256": {
+    "results/lag14/budget_curve.csv": "c3c192fe0ce28e2b5d7a0d5efe23ecb8a7a78186093e06f779089f59752099f4",
+    "results/lag14/calibration.csv": "1af0da9b5ccff7b219fc74247dcf0beba0bb964fa60c9cabf733fd8d0dbf2927",
+    "results/lag14/coefficients.csv": "32631271638ccb4103ae36410eae2f7dcdac4adf0fd4fb62960cee4da60a14e2",
+    "results/lag14/monthly.csv": "755d535b0f836d57d2244070e3b815dea54d0288e1fc27cc4c9334c7850f10d7",
+    "results/lag14/policies.csv": "fdf450e2231850d02f3868acf4de0e058114434a27331f54d002cf36532d881c",
+    "results/lag14/segments.csv": "2305152b9f8999ed42f85dd3d34336eda9325c97c5d70cc279c7827f089b02c3",
+    "results/lag14/validation_models.csv": "a7095b9fcfb850e15c5c754e02f4e6b72d854d6c049f10ce8492caa33013a5a9",
+    "results/lag14/validation_rules.csv": "f6843340fadd674b552484874719a3a7e227aed3e70fbd1ac5ba4eeb37bee333",
+    "results/lag14/yearly.csv": "67f6e3e40d85632f4926fc772a6f645f531ddbaaa00c4b73f927f8b11eb57069",
+    "results/lag30/budget_curve.csv": "19239a90b0a4e5aafc0fa7bce5c3e14042e96cffd9bd25e321f62ff7a81b2882",
+    "results/lag30/calibration.csv": "492b454f41b24bff3b5a7c8783599cd6d32e3916177b8aed39fa6bfaee01ec10",
+    "results/lag30/coefficients.csv": "7c74ea04dec150106a3b213120a3ce3e960875678c4431fc77a3896330160666",
+    "results/lag30/monthly.csv": "4b8d63a02ff57278ef043659ea0d1924094ec4acad63ef74947442ad5d983bd2",
+    "results/lag30/policies.csv": "ef9910222baba51abf85b12fbf2a820c8dbb08366c1fdf9f665f6042eec3bb41",
+    "results/lag30/segments.csv": "89d13701afef9c8844a625986097dba6e64794321ec296005152cfdeb9d55eff",
+    "results/lag30/validation_models.csv": "89e448eebcc3a73291af20e851aa986ab69995911a3d79c91a3bf992bd92f81b",
+    "results/lag30/validation_rules.csv": "54bdcf636cb051c5731c75d985ce40aa5ef9aac97a7affa600197f28d35ae2c8",
+    "results/lag30/yearly.csv": "9682892a0242c994b1af78c3a6a72e7a4a6f7a0ccd1a7011c77b769e78d9e10a"
+  },
+  "summary_values": {
+    "14": {
+      "chosen_model": "logistic",
+      "audit": {
+        "raw_rows": 123673,
+        "duplicate_id_removed": 0,
+        "invalid_identity_or_date_removed": 304,
+        "conflicting_same_day_rows_removed": 1544,
+        "same_day_same_result_duplicates_removed": 76,
+        "valid_identity_dedup_rows": 121749,
+        "non_evaluable_results_removed_from_history": 19260,
+        "target_before_month_dedup": 29521,
+        "repeated_routine_same_venue_month_removed": 1,
+        "target_rows": 29520,
+        "history_rows": 102489,
+        "target_venues": 9628,
+        "raw_result_counts": {
+          "Pass": 54972,
+          "Pass w/ Conditions": 24799,
+          "Fail": 23843,
+          "Out of Business": 9392,
+          "No Entry": 7904,
+          "Not Ready": 2735,
+          "Business Not Located": 28
+        }
+      },
+      "splits": {
+        "train": 12606,
+        "validation": 4530,
+        "refit": 17510,
+        "test": 11869
+      },
+      "split_dates": {
+        "initial_fit_as_of": "2023-01-01",
+        "final_fit_and_selection_as_of": "2024-01-01",
+        "validation_start": "2023-01-01",
+        "validation_end_exclusive": "2023-12-01",
+        "validation_months": 11,
+        "train_latest_label": "2022-12-16",
+        "validation_latest_label": "2023-11-30",
+        "refit_latest_label": "2023-12-15"
+      },
+      "precision_difference_ci": {
+        "comparison": "model minus history_rule",
+        "unit": "absolute precision difference",
+        "estimate": 0.017190775681341718,
+        "lower95": 0.0028904533334950504,
+        "upper95": 0.03053116265695008,
+        "bootstrap": "paired whole-month resampling; does not account for cross-month venue dependence",
+        "repetitions": 2000
+      }
+    },
+    "30": {
+      "chosen_model": "logistic",
+      "audit": {
+        "raw_rows": 123673,
+        "duplicate_id_removed": 0,
+        "invalid_identity_or_date_removed": 304,
+        "conflicting_same_day_rows_removed": 1544,
+        "same_day_same_result_duplicates_removed": 76,
+        "valid_identity_dedup_rows": 121749,
+        "non_evaluable_results_removed_from_history": 19260,
+        "target_before_month_dedup": 29521,
+        "repeated_routine_same_venue_month_removed": 1,
+        "target_rows": 29520,
+        "history_rows": 102489,
+        "target_venues": 9628,
+        "raw_result_counts": {
+          "Pass": 54972,
+          "Pass w/ Conditions": 24799,
+          "Fail": 23843,
+          "Out of Business": 9392,
+          "No Entry": 7904,
+          "Not Ready": 2735,
+          "Business Not Located": 28
+        }
+      },
+      "splits": {
+        "train": 12432,
+        "validation": 4530,
+        "refit": 17236,
+        "test": 11869
+      },
+      "split_dates": {
+        "initial_fit_as_of": "2023-01-01",
+        "final_fit_and_selection_as_of": "2024-01-01",
+        "validation_start": "2023-01-01",
+        "validation_end_exclusive": "2023-12-01",
+        "validation_months": 11,
+        "train_latest_label": "2022-12-01",
+        "validation_latest_label": "2023-11-30",
+        "refit_latest_label": "2023-12-01"
+      },
+      "precision_difference_ci": {
+        "comparison": "model minus history_rule",
+        "unit": "absolute precision difference",
+        "estimate": 0.010482180293501049,
+        "lower95": -0.0024362520496835857,
+        "upper95": 0.02297922516097948,
+        "bootstrap": "paired whole-month resampling; does not account for cross-month venue dependence",
+        "repetitions": 2000
+      }
+    }
+  }
+}

@@ -20,7 +20,7 @@
     "month_cos"
   ],
   "chosen_model": "logistic",
-  "selection_rule": "highest pooled monthly Precision@20% in validation 2023; no test tuning",
+  "selection_rule": "highest pooled monthly Precision@20% in January-November 2023; no test tuning",
   "best_rule_selected_on_validation": "history_rule",
   "audit": {
     "raw_rows": 123673,
@@ -47,9 +47,19 @@
   },
   "splits": {
     "train": 12606,
-    "validation": 4960,
+    "validation": 4530,
     "refit": 17510,
     "test": 11869
+  },
+  "split_dates": {
+    "initial_fit_as_of": "2023-01-01",
+    "final_fit_and_selection_as_of": "2024-01-01",
+    "validation_start": "2023-01-01",
+    "validation_end_exclusive": "2023-12-01",
+    "validation_months": 11,
+    "train_latest_label": "2022-12-16",
+    "validation_latest_label": "2023-11-30",
+    "refit_latest_label": "2023-12-15"
   },
   "test_scores": {
     "roc_auc": 0.6247709609193502,

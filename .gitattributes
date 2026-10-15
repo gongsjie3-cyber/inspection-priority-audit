@@ -2,3 +2,6 @@
 *.png binary
 *.gz binary
 *.joblib binary
+
+# Generated presentation, not hand-written application source.
+*.html linguist-generated=true

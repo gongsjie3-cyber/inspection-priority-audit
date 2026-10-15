@@ -20,7 +20,7 @@
     "month_cos"
   ],
   "chosen_model": "logistic",
-  "selection_rule": "model family fixed from lag14 validation; refit with 30-day availability",
+  "selection_rule": "model family fixed from lag14 January-November 2023 validation; refit with 30-day availability",
   "best_rule_selected_on_validation": "history_rule",
   "audit": {
     "raw_rows": 123673,
@@ -47,9 +47,19 @@
   },
   "splits": {
     "train": 12432,
-    "validation": 4960,
+    "validation": 4530,
     "refit": 17236,
     "test": 11869
+  },
+  "split_dates": {
+    "initial_fit_as_of": "2023-01-01",
+    "final_fit_and_selection_as_of": "2024-01-01",
+    "validation_start": "2023-01-01",
+    "validation_end_exclusive": "2023-12-01",
+    "validation_months": 11,
+    "train_latest_label": "2022-12-01",
+    "validation_latest_label": "2023-11-30",
+    "refit_latest_label": "2023-12-01"
   },
   "test_scores": {
     "roc_auc": 0.6235164401236902,

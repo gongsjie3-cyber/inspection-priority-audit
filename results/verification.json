@@ -1,23 +1,89 @@
 {
+  "reviewed_on": "2026-10-15",
+  "scope": "Frozen public snapshot; local calculation and presentation review, not third-party certification or deployment validation.",
   "unit_tests": {
-    "passed": 10,
+    "passed": 17,
     "failed": 0,
     "log": "results/test_log.txt"
   },
-  "sql_audits": "all history counts and 24 monthly rankings matched",
+  "fresh_reproduction": {
+    "inputs": "Source, SQL, tests, raw snapshot, manifest and reviewed report reference; no prior fitted models, features, scores, figures or SQLite database copied.",
+    "steps": [
+      "lag14 pipeline",
+      "lag30 pipeline",
+      "17 tests",
+      "report generation"
+    ],
+    "status": "passed",
+    "matching_result_files": 27,
+    "comparison": "Byte contents; gzip CSV files compared after decompression.",
+    "environment_note": "Used already installed pinned dependencies; package installation in a new operating system was not tested."
+  },
+  "environment": {
+    "python": "3.12.14",
+    "package_versions": {
+      "numpy": "2.5.3",
+      "pandas": "2.2.3",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "joblib": "1.6.0",
+      "matplotlib": "3.11.2",
+      "reportlab": "4.4.9"
+    }
+  },
+  "sql_audits": {
+    "history_count_rows": 29520,
+    "monthly_rankings": 24,
+    "status": "matched"
+  },
+  "additional_calculation_checks": {
+    "feature_rows_independently_reconstructed": 2364,
+    "features_per_row": 17,
+    "quota_month_budget_scenarios": 768,
+    "bootstrap_scenarios": 2,
+    "status": "passed"
+  },
   "report_pdf": {
     "pages": 5,
-    "visual_review": "All 5 final rendered pages reviewed; no overlap or clipping observed."
+    "visual_review": "All 5 final rendered pages reviewed; no overlap, clipping or garbled text observed.",
+    "expected_values_present": true,
+    "stale_values_absent": true
   },
   "html_checks": {
-    "initial_browser_dom": "Loaded with all expected tables and values",
-    "script_checks": "8 budget scenarios and 24 historical months passed using a DOM stub",
-    "live_interaction": "Not verified: preview tab became unavailable after initial load."
+    "budget_scenarios": 8,
+    "budget_cells": 280,
+    "historical_months": 24,
+    "case_rows": 192,
+    "method": "Execute the shipped HTML script with a minimal DOM stub; budget values compared with CSV outputs. This is not a browser layout test.",
+    "candidate_rows_matched_to_saved_scores": 192,
+    "browser_review": "Initial layout and budget interactions reviewed during audit; final payload rechecked with shipped-script execution. Full cross-browser and live month-selector testing not established."
   },
-  "score_explanations": "All test-row standardized contributions reconstruct logistic probabilities to tolerance 1e-12",
+  "score_explanations": {
+    "rows": 11869,
+    "maximum_probability_reconstruction_error": 2.220446049250313e-16,
+    "absolute_tolerance": 1e-12
+  },
+  "links_and_text": {
+    "markdown_local_links": "checked after final documentation update",
+    "tracked_text_scan": "no matches for reviewed patterns"
+  },
   "source_sha256": {
-    "src/build_report.py": "cd19b61d98230af4a42d107abfef0018271165d6804726fd167292e8048b9ca1",
+    "src/pipeline.py": "aea2556909847325b6402b9995604cdadb9a5e46b35d0faa30bdd98157e091e8",
+    "src/build_report.py": "72e7b234344080309a2a0a4ad43ca67b6621608e74c5916ccb78c8d09302dffc",
     "src/download.py": "5bbee467abbb46c07c555d02fa3e2787b8b9aee6bb38cfd676cbac3ada95c9fe",
-    "src/pipeline.py": "ede2a768876480d979571fef2b18c576586559a6ed78ceedfc1863945dcd6ae4"
+    "tests/test_integrity.py": "0e595c327bb366f4f7e66131aa595c09cc17ca3249b0d0ff19db1964d62eb874",
+    "sql/audit.sql": "d6b6f85e03a8e190280bb0ba9ccf146b9b4a7609053c70b7767e736fec9714f0",
+    "sql/monthly_decisions.sql": "d129231b2a56a3ff3d346b1a492c52e9581089c88317142d870350fd9ad66186",
+    "requirements.txt": "42291bc527d2a17d0199aa23b7761f9e5b23298305e2ad66aa6d5ae93009b198"
+  },
+  "artifact_sha256": {
+    "README.md": "97a54e93ec709c25eb2a3656051b9de03d31482ab85fb4c90adacaf81e90a151",
+    "方法与字段说明.md": "ef3dc06e6a163510637c0d1fe5342f74ae2b5b78329ca96e07575df6b416f925",
+    "核验说明.md": "6c18943b26f820a08ea271797a72d4f5635e9e7d5577c83abbf78a70d5da14df",
+    "项目报告.pdf": "d74e9a3cf7b90ced3325de1cfc6375f0d3676d5ed449bb79f97452bfd05d68ce",
+    "项目展示.html": "e6117ed1d88e1a087f75d3f3f71b502fbfbe0ec06fbf67b52e518c1294415d63",
+    "data/inspections_2019_2025.csv.gz": "c097129167e8276de4935713304f6ffb8f998450f95e30a5c78d2a3cc1f4c5c8",
+    "results/report_reference.json": "d7a9d14c314f179735362fce89c5eec86607ebf24eb3e023f22ca2e66f496b9b",
+    "results/test_log.txt": "a8a040fb43aaa2e4c2f39189d50899a7bfe2191ff1f2f23bc4b09d72e45d0328"
   }
 }

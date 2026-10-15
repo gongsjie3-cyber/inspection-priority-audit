@@ -7,6 +7,7 @@ import math
 import platform
 import sqlite3
 import sys
+from fractions import Fraction
 import joblib
 import numpy as np
 import pandas as pd
@@ -75,10 +76,10 @@ def build_features(history, target, lag_days=14):
         dates = g['date'].to_numpy(dtype='datetime64[ns]')
         for row in t.itertuples():
             decision = pd.Timestamp(row.month + '-01')
-            cutoff = decision - pd.Timedelta(days=lag_days)
+            cutoff = decision - np.timedelta64(lag_days, 'D')
             n = int(np.searchsorted(dates, np.datetime64(cutoff), side='left'))
             h = g.iloc[:n]
-            recent = h[h['date'] >= cutoff - pd.Timedelta(days=365)]
+            recent = h[h['date'] >= cutoff - np.timedelta64(365, 'D')]
             routine = h[h['inspection_type'].eq('Canvass')]
             complaint = recent[recent['inspection_type'].fillna('').str.startswith('Complaint')]
             last = h.iloc[-1] if n else None
@@ -115,9 +116,16 @@ def build_features(history, target, lag_days=14):
             records.append(rec)
     return pd.DataFrame(records).sort_values(['month','venue_id']).reset_index(drop=True)
 
+def monthly_budget(n, budget):
+    """Interpret a decimal budget exactly before rounding up."""
+    rate = Fraction(str(budget))
+    if not 0 < rate <= 1:
+        raise ValueError('budget must be in (0, 1].')
+    return math.ceil(n * rate)
+
 def select_indices(g, budget, method='model', reserve=0.):
     """Same monthly K for each rule; all ties break on hashed venue, never label."""
-    k = max(1, int(math.ceil(len(g)*budget)))
+    k = monthly_budget(len(g),budget)
     if method == 'high_risk':
         ordered = g.sort_values(['risk_high','risk_medium','venue_id'], ascending=[False,False,True])
     elif method == 'longest_wait':
@@ -130,13 +138,15 @@ def select_indices(g, budget, method='model', reserve=0.):
     if reserve == 0:
         return ordered.index[:k].tolist()
     # Hamilton largest-remainder allocation of reserved slots, then fill globally.
-    slots = int(math.floor(k*reserve))
+    slots = math.floor(k * Fraction(str(reserve)))
     size = g.groupby('zip_group').size().sort_index()
-    exact = size / len(g) * slots
-    quota = np.floor(exact).astype(int)
+    # A common denominator makes integer remainders directly comparable.
+    # Floating subtraction can otherwise break mathematically equal ties.
+    numerator = size * slots
+    quota = numerator // len(g)
     leftovers = slots - int(quota.sum())
-    priority = pd.DataFrame({'frac': exact-quota, 'zip':size.index}).sort_values(
-        ['frac','zip'], ascending=[False,True])
+    priority = pd.DataFrame({'remainder': numerator % len(g), 'zip':size.index}).sort_values(
+        ['remainder','zip'], ascending=[False,True])
     for z in priority['zip'].iloc[:leftovers]:
         quota.loc[z] += 1
     picked = []
@@ -155,7 +165,7 @@ def policy_name(method,reserve):
 def evaluate(d, budget=.2, policies=POLICIES):
     rows = []
     for month, g in d.groupby('month'):
-        k = max(1, math.ceil(len(g)*budget))
+        k = monthly_budget(len(g),budget)
         base = dict(month=month, candidates=len(g), positives=int(g.y.sum()), selected=k, budget=budget)
         rows.append(dict(base, policy='random_expected', hits=float(k*g.y.mean()),
                          zip_tv=np.nan, zip_coverage=np.nan))
@@ -197,20 +207,32 @@ def metric_scores(y,score):
             'average_precision':float(average_precision_score(y,score)),
             'brier':float(brier_score_loss(y,score))}
 
+def split_features(f, lag_days):
+    """Keep model selection and fitting inside their information boundaries.
+
+    Validate on complete January-November 2023 pools. December is excluded
+    because its last labels are not available on 2024-01-01 under either lag;
+    filtering individual December outcomes would change that month's pool.
+    December labels that are already available may still enter the final fit.
+    """
+    if lag_days not in (14, 30):
+        raise ValueError('Supported information-lag scenarios are 14 and 30 days.')
+    dates = pd.to_datetime(f.date)
+    train = f[dates < pd.Timestamp('2023-01-01') - np.timedelta64(lag_days, 'D')]
+    valid = f[dates.ge('2023-01-01') & dates.lt('2023-12-01')]
+    fit = f[dates < pd.Timestamp('2024-01-01') - np.timedelta64(lag_days, 'D')]
+    test = f[dates.ge('2024-01-01') & dates.lt('2026-01-01')].copy()
+    return train, valid, fit, test
+
 def main(lag=14):
     out=ROOT/'results'/f'lag{lag}'
     out.mkdir(parents=True,exist_ok=True)
     raw=pd.read_csv(ROOT/'data/inspections_2019_2025.csv.gz',dtype=str)
     history,target,audit=clean(raw)
     f=build_features(history,target,lag)
-    f.to_csv(out/'features.csv.gz',index=False,compression='gzip')
+    f.to_csv(out/'features.csv.gz',index=False,compression={'method':'gzip','mtime':0})
     print('Features ready:',len(f),flush=True)
-    dates=pd.to_datetime(f.date)
-    # Respect assumed publication lag at each model fit, including year boundaries.
-    train=f[dates < pd.Timestamp('2023-01-01')-pd.Timedelta(days=lag)]
-    valid=f[f.month.str.startswith('2023')]
-    fit=f[dates < pd.Timestamp('2024-01-01')-pd.Timedelta(days=lag)]
-    test=f[f.month.ge('2024-01')].copy()
+    train,valid,fit,test=split_features(f,lag)
     candidates={
         'logistic':make_pipeline(StandardScaler(),LogisticRegression(C=1.,max_iter=1000,random_state=42)),
         'hist_gradient_boosting':HistGradientBoostingClassifier(max_iter=150,max_leaf_nodes=7,
@@ -266,9 +288,18 @@ def main(lag=14):
     _,valid_rules=evaluate(v,policies=[(x,0) for x in baseline_names])
     best_rule=valid_rules[valid_rules.policy.isin(baseline_names)].sort_values('precision',ascending=False).iloc[0]['policy']
     metadata={'lag_days':lag,'features':FEATURES,'chosen_model':winner,
-              'selection_rule':('highest pooled monthly Precision@20% in validation 2023; no test tuning' if lag == 14 else 'model family fixed from lag14 validation; refit with 30-day availability'),
+              'selection_rule':('highest pooled monthly Precision@20% in January-November 2023; no test tuning' if lag == 14 else 'model family fixed from lag14 January-November 2023 validation; refit with 30-day availability'),
               'best_rule_selected_on_validation':best_rule,
               'audit':audit,'splits':{'train':len(train),'validation':len(valid),'refit':len(fit),'test':len(test)},
+              'split_dates':{
+                  'initial_fit_as_of':'2023-01-01',
+                  'final_fit_and_selection_as_of':'2024-01-01',
+                  'validation_start':'2023-01-01',
+                  'validation_end_exclusive':'2023-12-01',
+                  'validation_months':int(valid.month.nunique()),
+                  'train_latest_label':str(train.date.max()),
+                  'validation_latest_label':str(valid.date.max()),
+                  'refit_latest_label':str(fit.date.max())},
               'test_scores':metric_scores(test.y,test.score),
               'precision_difference_ci':block_interval(monthly,'model',best_rule),
               'random_difference_ci':block_interval(monthly,'model','random_expected'),
@@ -284,7 +315,7 @@ def main(lag=14):
                        ('monthly',monthly),('budget_curve',curve),('yearly',pd.concat(yearly)),
                        ('segments',pd.DataFrame(segment)),('calibration',calibration)]:
         frame.to_csv(out/(file+'.csv'),index=False)
-    test.to_csv(out/'scored_test.csv.gz',index=False,compression='gzip')
+    test.to_csv(out/'scored_test.csv.gz',index=False,compression={'method':'gzip','mtime':0})
     joblib.dump(model,out/'model.joblib')
     if winner == 'logistic':
         coefs=pd.DataFrame({'feature':FEATURES,'standardized_log_odds':model[-1].coef_[0]}).sort_values('standardized_log_odds',ascending=False)
@@ -301,5 +332,5 @@ def main(lag=14):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser()
-    p.add_argument('--lag',type=int,default=14)
+    p.add_argument('--lag',type=int,choices=[14,30],default=14)
     main(p.parse_args().lag)
