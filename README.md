@@ -8,7 +8,7 @@
 
 分析支持两个管理决策：模型相比经验规则增加的命中是否值得维护成本；兼顾地区覆盖时，需要接受多大的命中率下降。交付包括可复现分析、策略对比、研究报告和历史候选解释。
 
-[五页研究报告](项目报告.pdf) · [交互报告文件](项目展示.html) · [方法与字段说明](方法与字段说明.md) · [原始数据来源](https://data.cityofchicago.org/d/4ijn-s7e5)
+[在线交互演示](https://gongsjie3-cyber.github.io/inspection-priority-audit/) · [五页研究报告](项目报告.pdf) · [交互报告文件](项目展示.html) · [方法与字段说明](方法与字段说明.md) · [原始数据来源](https://data.cityofchicago.org/d/4ijn-s7e5)
 
 > **评价范围：** 候选池由每月实际接受例行检查且有有效结果的餐饮记录事后构造。以下结果衡量已受检样本的排序表现，不代表真实月初可检查名单，也不是已经上线的检查排程效果。
 
@@ -44,6 +44,7 @@
 
 ## 快速查看
 
+- 打开 [在线演示](https://gongsjie3-cyber.github.io/inspection-priority-audit/)，可直接切换预算与历史月份，也可在线阅读 PDF，无须安装环境。
 - 直接阅读 [PDF 报告](项目报告.pdf)。
 - 下载仓库后，用浏览器打开 `项目展示.html`，可切换预算和历史月份；页面不依赖外部服务。
 - [主分析结果](results/lag14/policies.csv)、[30 天敏感性结果](results/lag30/policies.csv)、[逐年结果](results/lag14/yearly.csv) 可直接查看。
@@ -72,6 +73,19 @@ python src/build_report.py
 
 若需重新获取官方历史导出，可运行 `python src/download.py`。官方后续修订可能改变结果，新的导出也会更新来源清单；请先保留原快照。
 
+## 在线演示的发布
+
+GitHub Pages 从 `main` 分支的 `docs/` 目录发布。页面和 PDF 来自本仓库已核验的交付文件；页面内嵌图表与预计算数据，交互不调用模型服务。
+
+更新分析后，先重新核验报告并更新 `results/verification.json` 中的交付文件校验值，再运行：
+
+```bash
+python src/prepare_pages.py
+python src/prepare_pages.py --check
+```
+
+将生成的 `docs/` 一并提交并推送后，GitHub Pages 会重新部署。打包脚本会拒绝发布与核验记录不一致的报告。
+
 ## 目录
 
 | 路径 | 内容 |
@@ -84,6 +98,7 @@ python src/build_report.py
 | `results/lag14/` | 主分析指标、逐月结果和历史候选评分 |
 | `results/lag30/` | 固定模型类别后的信息延迟敏感性分析 |
 | `figures/` | 策略、预算、覆盖及月度稳定性图表 |
+| `docs/` | GitHub Pages 在线演示及已核验的 PDF 副本 |
 
 ## 适用边界
 

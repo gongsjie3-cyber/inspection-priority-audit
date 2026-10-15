@@ -74,16 +74,29 @@
     "tests/test_integrity.py": "0e595c327bb366f4f7e66131aa595c09cc17ca3249b0d0ff19db1964d62eb874",
     "sql/audit.sql": "d6b6f85e03a8e190280bb0ba9ccf146b9b4a7609053c70b7767e736fec9714f0",
     "sql/monthly_decisions.sql": "d129231b2a56a3ff3d346b1a492c52e9581089c88317142d870350fd9ad66186",
-    "requirements.txt": "42291bc527d2a17d0199aa23b7761f9e5b23298305e2ad66aa6d5ae93009b198"
+    "requirements.txt": "42291bc527d2a17d0199aa23b7761f9e5b23298305e2ad66aa6d5ae93009b198",
+    "src/prepare_pages.py": "e346a51d7504167f9974ff1879e74d6d4f4ee76a67dd84accabafe69a5dd9109"
   },
   "artifact_sha256": {
-    "README.md": "97a54e93ec709c25eb2a3656051b9de03d31482ab85fb4c90adacaf81e90a151",
+    "README.md": "fbc073cb7f4e4bb9a306acb2947c8b45fa8a20ae540b58361f29a456635eac45",
     "方法与字段说明.md": "ef3dc06e6a163510637c0d1fe5342f74ae2b5b78329ca96e07575df6b416f925",
     "核验说明.md": "6c18943b26f820a08ea271797a72d4f5635e9e7d5577c83abbf78a70d5da14df",
     "项目报告.pdf": "d74e9a3cf7b90ced3325de1cfc6375f0d3676d5ed449bb79f97452bfd05d68ce",
     "项目展示.html": "e6117ed1d88e1a087f75d3f3f71b502fbfbe0ec06fbf67b52e518c1294415d63",
     "data/inspections_2019_2025.csv.gz": "c097129167e8276de4935713304f6ffb8f998450f95e30a5c78d2a3cc1f4c5c8",
     "results/report_reference.json": "d7a9d14c314f179735362fce89c5eec86607ebf24eb3e023f22ca2e66f496b9b",
-    "results/test_log.txt": "a8a040fb43aaa2e4c2f39189d50899a7bfe2191ff1f2f23bc4b09d72e45d0328"
+    "results/test_log.txt": "a8a040fb43aaa2e4c2f39189d50899a7bfe2191ff1f2f23bc4b09d72e45d0328",
+    "docs/index.html": "b93967956d41ce189f855813a5082eba85df7adfae105dfbaef9332c565a9447",
+    "docs/report.pdf": "d74e9a3cf7b90ced3325de1cfc6375f0d3676d5ed449bb79f97452bfd05d68ce",
+    "docs/.nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "pages_packaging": {
+    "source": "Reviewed standalone HTML and PDF; no new model run.",
+    "javascript_and_data": "Identical to reviewed standalone HTML.",
+    "pdf": "Byte-identical to reviewed PDF.",
+    "embedded_figures": 4,
+    "anchor_and_local_links": "passed",
+    "deployment_source": "main /docs",
+    "public_url": "https://gongsjie3-cyber.github.io/inspection-priority-audit/"
   }
 }
